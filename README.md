@@ -109,7 +109,7 @@ Collection pulls the Docker image, creates a stopped container, copies the Keycl
 `fingerprints.json` currently contains **59 versions** across Keycloak 24–26:
 
 ````
-24.0.x  →  24.0.0 – 24.0.5  (6 releases; 24.0.3 skipped by upstream)
+24.0.x  →  24.0.0 – 24.0.5  (6 releases)
 25.0.x  →  25.0.0 – 25.0.6  (6 releases; 25.0.3 skipped by upstream)
 26.0.x  →  26.0.0 – 26.0.8  (8 releases; 26.0.3 skipped by upstream)
 26.1.x  →  26.1.0 – 26.1.5  (6 releases)
