@@ -44,7 +44,7 @@ docker run --rm -t ghcr.io/l4rm4nd/keycloak-enum:latest fingerprint https://keyc
 
 # add missing fingerprints for new releases; requires docker socket as we pull keycloak images and a bind mount volume
 wget https://raw.githubusercontent.com/l4rm4nd/Keycloak-Enum/refs/heads/main/fingerprints.json
-docker run --rm -t -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/fingerprints.json:/app/fingerprints.json ghcr.io/l4rm4nd/keycloak-enum:latest collect --new
+docker run --rm -t -v /var/run/docker.sock:/var/run/docker.sock:ro -v $(pwd)/fingerprints.json:/app/fingerprints.json ghcr.io/l4rm4nd/keycloak-enum:latest collect --new
 ````
 
 ### 🐍 Example 2 - Native Python
