@@ -1,5 +1,6 @@
 <div align="center" width="100%">
     <h1>Keycloak-Enum</h1>
+    <img width="300" alt="Picture1" src="https://github.com/user-attachments/assets/5b5db1a7-9785-4ee0-a27b-8c85a6920928" />
     <p>Identify the exact Keycloak version of a live instance by fingerprinting its publicly-served static assets</p><p>
     <a target="_blank" href="https://github.com/l4rm4nd"><img src="https://img.shields.io/badge/maintainer-LRVT-orange" /></a>
     <a target="_blank" href="https://GitHub.com/l4rm4nd/Keycloak-Enum/graphs/contributors/"><img src="https://img.shields.io/github/contributors/l4rm4nd/Keycloak-Enum.svg" /></a>
