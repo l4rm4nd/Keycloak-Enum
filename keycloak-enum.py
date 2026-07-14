@@ -54,6 +54,9 @@ USER_AGENT = f"keycloak-fingerprint/{TOOL_VERSION} (https://github.com/lvetter/K
 DEFAULT_DB = Path(__file__).parent / "fingerprints.json"
 
 KC_IMAGE = "quay.io/keycloak/keycloak:{version}"
+GITHUB_RELEASES_URL = (
+    "https://api.github.com/repos/keycloak/keycloak/releases?per_page=100"
+)
 
 # All versions included in the bundled fingerprints.json
 KNOWN_VERSIONS = [
@@ -182,6 +185,44 @@ def http_get(url: str, *, verify: bool = True, timeout: float = 15) -> tuple[byt
 
 def sha256hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def _version_tuple(v: str) -> tuple[int, ...]:
+    try:
+        return tuple(int(x) for x in v.split("."))
+    except ValueError:
+        return (0,)
+
+
+def fetch_github_releases(
+    *, min_version: str = "24.0.0", timeout: float = 5.0
+) -> list[str]:
+    """Return sorted stable Keycloak release versions from the GitHub API.
+
+    Only versions >= *min_version* are returned. Always returns an empty list
+    on any network or parse error — this function is non-fatal by design.
+    """
+    min_tup = _version_tuple(min_version)
+    try:
+        body, code = http_get(GITHUB_RELEASES_URL, timeout=timeout)
+        if code != 200:
+            return []
+        releases = json.loads(body)
+    except Exception:
+        return []
+
+    versions = []
+    for r in releases:
+        tag = r.get("tag_name", "")
+        if (
+            re.fullmatch(r"\d+\.\d+\.\d+", tag)
+            and not r.get("prerelease")
+            and not r.get("draft")
+            and _version_tuple(tag) >= min_tup
+        ):
+            versions.append(tag)
+    versions.sort(key=_version_tuple)
+    return versions
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -762,6 +803,25 @@ def collect_version(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Release update check
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _warn_new_releases(db: dict, *, timeout: float = 5.0) -> None:
+    """Print a stderr warning when GitHub has Keycloak releases not in *db*."""
+    github_versions = fetch_github_releases(timeout=timeout)
+    if not github_versions:
+        return  # network unavailable or rate-limited — stay silent
+    missing = [v for v in github_versions if v not in db]
+    if missing:
+        print(
+            f"\n[i] {len(missing)} new Keycloak release(s) not yet fingerprinted: "
+            + ", ".join(missing)
+            + "\n    Update with: python3 keycloak-enum.py collect --new\n",
+            file=sys.stderr,
+        )
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # CLI commands
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -772,6 +832,9 @@ def cmd_fingerprint(args) -> int:
         print(f"ERROR: fingerprint database not found at {db_path}", file=sys.stderr)
         print("Build one with:  python3 keycloak-enum.py collect --all", file=sys.stderr)
         return 1
+
+    if not args.no_update_check:
+        _warn_new_releases(db)
 
     index = build_index(db)
     result = fingerprint_target(
@@ -832,12 +895,23 @@ def cmd_collect(args) -> int:
     db_path = Path(args.db)
     db = load_db(db_path)
 
-    if args.all:
+    if args.new:
+        print("Checking GitHub for new releases...", end=" ", flush=True)
+        github_versions = fetch_github_releases()
+        if not github_versions:
+            print("ERROR: could not fetch releases from GitHub.", file=sys.stderr)
+            return 1
+        versions = [v for v in github_versions if v not in db]
+        if not versions:
+            print("fingerprints are already up to date.")
+            return 0
+        print(f"found {len(versions)} new release(s): {', '.join(versions)}")
+    elif args.all:
         versions = KNOWN_VERSIONS
     elif args.version:
         versions = [args.version]
     else:
-        print("ERROR: specify a version or --all", file=sys.stderr)
+        print("ERROR: specify a version, --all, or --new", file=sys.stderr)
         return 1
 
     print(f"Collecting {len(versions)} version(s) into {db_path}")
@@ -914,6 +988,8 @@ def main() -> int:
                     help="Print debug output to stderr")
     fp.add_argument("--json", dest="json_output", action="store_true",
                     help="Also print the full result as JSON")
+    fp.add_argument("--no-update-check", dest="no_update_check", action="store_true",
+                    help="Skip the GitHub release update check")
 
     # ── collect ──────────────────────────────────────────────────────────────
     col = sub.add_parser("collect",
@@ -924,6 +1000,8 @@ def main() -> int:
                      help="Collect all versions in the built-in list")
     col.add_argument("--force", action="store_true",
                      help="Re-collect even if already in the database")
+    col.add_argument("--new", action="store_true",
+                     help="Fetch GitHub releases and collect any not yet in the database")
     col.add_argument("--image", metavar="IMAGE",
                      help="Custom Docker image  (single-version only)")
 

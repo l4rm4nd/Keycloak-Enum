@@ -93,17 +93,22 @@ Version     : 26.2.5
 # Single version
 python3 keycloak-fingerprint.py collect 26.7.1
 
-# All versions in the built-in list
+# All versions in the built-in list; basically recreate the local fingerprint database
 python3 keycloak-fingerprint.py collect --all
 
+# Fetch latest releases from GitHub and collect any not yet fingerprinted
+python3 keycloak-enum.py collect --new
+
 # Custom image reference
-python3 keycloak-fingerprint.py collect 26.7.1 --image myregistry/keycloak:26.7.1
+python3 keycloak-enum.py collect 26.7.1 --image myregistry/keycloak:26.7.1
 
 # Re-collect even if already present
-python3 keycloak-fingerprint.py collect 26.7.1 --force
+python3 keycloak-enum.py collect 26.7.1 --force
 ````
 
 Collection pulls the Docker image, creates a stopped container, copies the Keycloak JARs, hashes their assets in memory, then immediately removes the container. No container is ever started.
+
+On each `fingerprint` run the tool automatically checks GitHub for new Keycloak releases and warns if the local `fingerprints.json` is missing any. Pass `--no-update-check` to suppress this check.
 
 ## 💎 Covered Versions
 
