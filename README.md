@@ -41,6 +41,10 @@ No ports beyond 80/443 are used. No credentials are required. No pages that requ
 
 ````bash
 docker run --rm -t ghcr.io/l4rm4nd/keycloak-enum:latest fingerprint https://keycloak.example.com
+
+# add missing fingerprints for new releases; requires docker socket as we pull keycloak images and a bind mount volume
+wget https://raw.githubusercontent.com/l4rm4nd/Keycloak-Enum/refs/heads/main/fingerprints.json
+docker run --rm -t -v /var/run/docker.sock:/var/run/docker.sock -v $(pwd)/fingerprints.json:/app/fingerprints.json ghcr.io/l4rm4nd/keycloak-enum:latest collect --new
 ````
 
 ### 🐍 Example 2 - Native Python
@@ -59,6 +63,9 @@ python3 keycloak-fingerprint.py fingerprint https://keycloak.example.com -v
 
 # Output full result as JSON
 python3 keycloak-fingerprint.py fingerprint https://keycloak.example.com --json
+
+# add missing fingerprints for new releases; requires docker
+python3 keycloak-fingerprint.py collect --new
 ````
 
 **Example output:**
