@@ -1,3 +1,10 @@
+## [0.1.3](https://github.com/l4rm4nd/Keycloak-Enum/compare/v0.1.2...v0.1.3) (2026-07-14)
+
+
+### Bug Fixes
+
+* add collect --new feature and update missing fingerprints ([01839c3](https://github.com/l4rm4nd/Keycloak-Enum/commit/01839c35d402e057d65178302e49758797718b38))
+
 ## [0.1.2](https://github.com/l4rm4nd/Keycloak-Enum/compare/v0.1.1...v0.1.2) (2026-07-14)
 
 
