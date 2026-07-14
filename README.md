@@ -127,7 +127,7 @@ On each run of `fingerprint` the tool automatically checks GitHub for new Keyclo
 26.7.x  →  26.7.0            (1 release)
 ````
 
-To add a new release, run `collect <version>` — it appends to `fingerprints.json`.
+To add new release versions, run either `collect <version>` or `collect --new` - it appends fingerprints to the local `fingerprints.json`.
 
 ## 💥 Limitations
 
