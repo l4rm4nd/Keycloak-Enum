@@ -108,7 +108,7 @@ python3 keycloak-enum.py collect 26.7.1 --force
 
 Collection pulls the Docker image, creates a stopped container, copies the Keycloak JARs, hashes their assets in memory, then immediately removes the container. No container is ever started.
 
-On each `fingerprint` run the tool automatically checks GitHub for new Keycloak releases and warns if the local `fingerprints.json` is missing any. Pass `--no-update-check` to suppress this check.
+On each run of `fingerprint` the tool automatically checks GitHub for new Keycloak releases and warns if the local `fingerprints.json` is missing any. Pass `--no-update-check` to suppress this check.
 
 ## 💎 Covered Versions
 
