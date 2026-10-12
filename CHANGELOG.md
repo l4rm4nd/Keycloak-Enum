@@ -1,3 +1,10 @@
+## [0.1.4](https://github.com/l4rm4nd/Keycloak-Enum/compare/v0.1.3...v0.1.4) (2026-10-12)
+
+
+### Bug Fixes
+
+* add latest fingerprints ([ca21edb](https://github.com/l4rm4nd/Keycloak-Enum/commit/ca21edbe0867cfd4f60aec9aeccb391020fba1d4))
+
 ## [0.1.3](https://github.com/l4rm4nd/Keycloak-Enum/compare/v0.1.2...v0.1.3) (2026-07-14)
 
 
